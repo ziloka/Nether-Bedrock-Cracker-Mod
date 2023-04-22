@@ -24,13 +24,12 @@ public class FindCommand {
     public static final int radius = 16 * 8;
 
     public static void register(CommandDispatcher<FabricClientCommandSource> dispatcher) {
-        dispatcher.register(literal("nethercracker").then(literal("find").executes(ctx ->
-                run(ctx.getSource()))));
+        dispatcher.register(literal("nethercracker").then(literal("find").executes(ctx -> run(ctx.getSource()))));
     }
 
     private static int run(FabricClientCommandSource source) throws CommandSyntaxException {
         World world = source.getWorld();
-        BlockPos senderPos = BlockPos.ofFloored(source.getPosition());
+        BlockPos senderPos = new BlockPos(source.getPosition());
         ChunkPos chunkPos = new ChunkPos(senderPos);
 
         List<BlockPos> blockCandidates = new ArrayList<BlockPos>();
@@ -49,12 +48,17 @@ public class FindCommand {
         source.sendFeedback(Text.literal(String.format("Found %d bedrocks at y = 4", blockCandidates.size())));
 
         String str = new String();
-        for (BlockPos block: blockCandidates) {
+        for (BlockPos block : blockCandidates) {
             str += String.format("%d %d %d\n", block.getX(), block.getY(), block.getZ());
         }
 
         String finalStr = str;
-        Text text = Texts.bracketed((Text.literal("Click here to copy block info")).styled(style -> style.withColor(Formatting.GREEN).withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, finalStr)).withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.translatable("chat.copy.click"))).withInsertion(finalStr)));
+        Text text = Texts.bracketed(
+                (Text.literal("Click here to copy block info")).styled(style -> style.withColor(Formatting.GREEN)
+                        .withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, finalStr))
+                        .withHoverEvent(
+                                new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.translatable("chat.copy.click")))
+                        .withInsertion(finalStr)));
 
         source.sendFeedback(text);
 
@@ -75,6 +79,5 @@ public class FindCommand {
             }
         }
     }
-
 
 }
