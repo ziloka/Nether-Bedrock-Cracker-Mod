@@ -1,7 +1,6 @@
 package com.ziloka.NetherBedrockCracker.commands;
 
 import com.mojang.brigadier.CommandDispatcher;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.minecraft.block.Blocks;
 import net.minecraft.text.ClickEvent;
@@ -11,6 +10,8 @@ import net.minecraft.text.Texts;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
 
@@ -27,12 +28,13 @@ public class FindCommand {
         dispatcher.register(literal("nethercracker").then(literal("find").executes(ctx -> run(ctx.getSource()))));
     }
 
-    private static int run(FabricClientCommandSource source) throws CommandSyntaxException {
+    private static int run(FabricClientCommandSource source) {
         World world = source.getWorld();
-        BlockPos senderPos = new BlockPos(source.getPosition());
+        Vec3d position = source.getPosition();
+        BlockPos senderPos = new BlockPos(new Vec3i((int) position.getX(), (int) position.getY(), (int) position.getZ()));
         ChunkPos chunkPos = new ChunkPos(senderPos);
 
-        List<BlockPos> blockCandidates = new ArrayList<BlockPos>();
+        List<BlockPos> blockCandidates = new ArrayList<>();
 
         int chunkRadius = (radius >> 4) + 1;
         for (int r = 0; r < chunkRadius; r++) {
@@ -45,9 +47,9 @@ public class FindCommand {
             }
         }
 
-        source.sendFeedback(Text.literal(String.format("Found %d bedrocks at y = 4", blockCandidates.size())));
+        source.sendFeedback(Text.literal(String.format("Found %d bedrocks at y = 4 or y = 123", blockCandidates.size())));
 
-        String str = new String();
+        String str = "";
         for (BlockPos block : blockCandidates) {
             str += String.format("%d %d %d\n", block.getX(), block.getY(), block.getZ());
         }
@@ -73,7 +75,8 @@ public class FindCommand {
             for (int z = 0; z < 16; z++) {
                 int worldX = (chunk.getPos().x << 4) + x;
                 int worldZ = (chunk.getPos().z << 4) + z;
-                if (chunk.getBlockState(mutablePos.set(worldX, 4, worldZ)).isOf(Blocks.BEDROCK)) {
+                // if floor or ceiling bedrock
+                if (chunk.getBlockState(mutablePos.set(worldX, 4, worldZ)).isOf(Blocks.BEDROCK) || chunk.getBlockState(mutablePos.set(worldX, 123, worldZ)).isOf(Blocks.BEDROCK)) {
                     blockCandidates.add(mutablePos.toImmutable());
                 }
             }
