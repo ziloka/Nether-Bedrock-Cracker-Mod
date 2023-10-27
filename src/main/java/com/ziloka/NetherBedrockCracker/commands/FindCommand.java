@@ -51,7 +51,7 @@ public class FindCommand {
 
         String str = "";
         for (BlockPos block : blockCandidates) {
-            str += String.format("%d %d %d\n", block.getX(), block.getY(), block.getZ());
+            str += String.format("%d %d %d Bedrock\n", block.getX(), block.getY(), block.getZ());
         }
 
         String finalStr = str;
