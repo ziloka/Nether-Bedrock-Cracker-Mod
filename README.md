@@ -4,3 +4,16 @@
 This mod is for this application https://github.com/19MisterX98/Nether_Bedrock_Cracker
 
 Run /nethercracker find
+
+
+## Contributing
+
+building mod
+```
+.\gradlew.bat build
+```
+
+Testing client
+```
+.\gradlew.bat runClient
+```
